@@ -5,12 +5,24 @@ namespace App\Http\Controllers;
 use App\Models\Doctor;
 use App\Http\Requests\StoreDoctorRequest;
 use App\Http\Requests\UpdateDoctorRequest;
+use App\Models\HealthProfessional;
+use App\Transformers\HealthProfessionalsTransformer;
 
 class DoctorController extends Controller
 {
+    /**
+     * @param HealthProfessionalsTransformer $healthProfessionalsTransformer
+     */
+    public function __construct(
+        protected HealthProfessionalsTransformer $healthProfessionalsTransformer
+    ){}
+
     public function index()
     {
-        $doctors = Doctor::withCount('tests')->orderBy('updated_at', 'desc')->paginate(100);
+        $doctors = HealthProfessional::query()
+            ->orderBy('updated_at', 'desc')
+            ->paginate(100)
+            ->through(fn(HealthProfessional $healProfessional) => $this->healthProfessionalsTransformer->transform($healProfessional));
 
         return view('doctors.index', compact('doctors'));
     }
@@ -26,14 +38,22 @@ class DoctorController extends Controller
         return redirect()->route('doctors.index')->with('success', 'Doctor created successfully.');
     }
 
-    public function show(Doctor $doctor)
+    public function show(int $doctor)
     {
+        $doctor = HealthProfessional::query()->findOrFail($doctor);
         return view('doctors.show', compact('doctor'));
     }
 
-    public function edit(Doctor $doctor)
+    public function edit(int $doctor)
     {
+        $doctor = HealthProfessional::query()->findOrFail($doctor);
         return view('doctors.edit', compact('doctor'));
+    }
+
+    public function merge(int $doctor)
+    {
+        $doctor = HealthProfessional::query()->findOrFail($doctor);
+        return view('doctors.show', compact('doctor'));
     }
 
     public function update(UpdateDoctorRequest $request, Doctor $doctor)

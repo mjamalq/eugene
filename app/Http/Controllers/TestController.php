@@ -3,13 +3,20 @@ namespace App\Http\Controllers;
 
 use App\Models\Doctor;
 use App\Models\Test;
+use App\Transformers\TestsTransformer;
 use Illuminate\Http\Request;
 
 class TestController extends Controller
 {
+    public function __construct(
+        protected TestsTransformer $testsTransformer
+    ){}
+
     public function index()
     {
-        $tests = Test::with('referringDoctor')->orderBy('updated_at', 'desc')->paginate(100);
+        $tests = Test::query()->orderBy('updated_at', 'desc')
+            ->paginate(100)
+            ->through(fn(Test $test) => $this->testsTransformer->transform($test));
 
         return view('tests.index', compact('tests'));
     }

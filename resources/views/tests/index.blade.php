@@ -28,20 +28,20 @@
             <tbody>
                 @foreach ($tests as $test)
                     <tr>
-                        <td class="border px-4 py-2">{{ $test->id }}</td>
-                        <td class="border px-4 py-2">{{ $test->updated_at->format('Y-m-d') }}</td>
-                        <td class="border px-4 py-2">{{ $test->name }}</td>
-                        <td class="border px-4 py-2">{{ $test->description }}</td>
+                        <td class="border px-4 py-2">{{ $test['id'] }}</td>
+                        <td class="border px-4 py-2">{{ $test['updated_at']->format('Y-m-d') }}</td>
+                        <td class="border px-4 py-2">{{ $test['name'] }}</td>
+                        <td class="border px-4 py-2">{{ $test['description'] }}</td>
                         <td class="border px-4 py-2">
-                            @if ($test->referringDoctor)
-                                <a href="{{ route('doctors.show', $test->referringDoctor) }}">
-                                    {{ $test->referringDoctor->name }}
+                            @if ($test['health_professional'])
+                                <a href="{{ route('doctors.show', $test['health_professional']['id']) }}">
+                                    {{ $test['health_professional']['name'] }}
                                 </a>
                             @endif
                         </td>
                         <td class="border px-4 py-2">
-                            @if ($test->referringDoctor)
-                                {{ $test->referringDoctor->clinic_name }}
+                            @if ($test['health_professional'])
+                                {{ $test['health_professional']['clinic_name'] }}
                             @endif
                         </td>
                     </tr>
